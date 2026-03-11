@@ -41,4 +41,6 @@ jobs:
           publish_dir: ./docs
           enable_jekyll: false
           force_orphan: true
+          user_name: "8ux Dev"
+          user_email: "info@8ux.dev"
           commit_message: "docs: publish generated TypeDoc output"
