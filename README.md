@@ -158,6 +158,13 @@ Generate docs locally with:
 npm run docs
 ```
 
+The published documentation is deployed from the `gh-pages` branch by CI.
+That branch is generated output only:
+
+- do not develop on `gh-pages`
+- do not open pull requests from `gh-pages` into `main`
+- expect `gh-pages` to diverge from `main`, because it contains built docs rather than source code
+
 ## Contributing
 
 ```bash
