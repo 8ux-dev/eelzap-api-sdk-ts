@@ -1,5 +1,10 @@
 # @8ux-co/eelzap-api-sdk-ts
 
+[![npm version](https://img.shields.io/npm/v/%408ux-co%2Feelzap-api-sdk-ts)](https://www.npmjs.com/package/@8ux-co/eelzap-api-sdk-ts)
+[![npm downloads](https://img.shields.io/npm/dm/%408ux-co%2Feelzap-api-sdk-ts)](https://www.npmjs.com/package/@8ux-co/eelzap-api-sdk-ts)
+[![CI](https://img.shields.io/github/actions/workflow/status/8ux-dev/eelzap-api-sdk-ts/ci.yml?branch=main&label=ci)](https://github.com/8ux-dev/eelzap-api-sdk-ts/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-github%20pages-blue)](https://8ux-dev.github.io/eelzap-api-sdk-ts/)
+
 Official TypeScript client for the EelZap Content Delivery API.
 
 ## Installation
