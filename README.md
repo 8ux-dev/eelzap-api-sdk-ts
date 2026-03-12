@@ -96,6 +96,23 @@ const homepage = await cms.documents.get('homepage', {
 });
 ```
 
+### Rich Text And Media Helpers
+
+```ts
+import {
+  getMediaUrl,
+  richTextToHtml,
+  richTextToPlainText,
+  type RichTextDocument,
+} from '@8ux-co/eelzap-api-sdk-ts';
+
+const description = item.content.description as RichTextDocument | null;
+
+const html = richTextToHtml(description);
+const excerpt = richTextToPlainText(description);
+const imageUrl = getMediaUrl(item.content.heroImage);
+```
+
 ## Next.js
 
 ```ts
