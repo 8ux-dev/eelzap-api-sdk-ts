@@ -5,8 +5,8 @@ import type { HttpClient } from './http';
 
 describe('ItemQueryBuilder', () => {
   it('is lazy until get is called', async () => {
-    const request = vi.fn().mockResolvedValue({ data: [], pagination: {}, collection: {} });
-    const http = { request } as unknown as HttpClient;
+    const get = vi.fn().mockResolvedValue({ data: [], pagination: {}, collection: {} });
+    const http = { get } as unknown as HttpClient;
 
     const query = new ItemQueryBuilder(http, { locale: 'en' }, 'products')
       .filter('category', 'electronics')
@@ -15,7 +15,7 @@ describe('ItemQueryBuilder', () => {
       .page(2)
       .pageSize(12);
 
-    expect(request).not.toHaveBeenCalled();
+    expect(get).not.toHaveBeenCalled();
     expect(query.toJSON()).toEqual({
       filter: { category: 'electronics' },
       sort: '-price',
@@ -26,11 +26,11 @@ describe('ItemQueryBuilder', () => {
 
     await query.get();
 
-    expect(request).toHaveBeenCalledOnce();
+    expect(get).toHaveBeenCalledOnce();
   });
 
   it('supports locale and status chaining', () => {
-    const http = { request: vi.fn() } as never;
+    const http = { get: vi.fn() } as never;
 
     const query = new ItemQueryBuilder(http, {}, 'products').locale('es').status('draft');
 

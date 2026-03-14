@@ -1,6 +1,6 @@
 {
   "name": "@8ux-co/eelzap-api-sdk-ts",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Official TypeScript client for the EelZap Content Delivery API.",
   "license": "MIT",
   "repository": {
@@ -49,6 +49,7 @@
     "test:coverage:check": "vitest run --coverage && node scripts/check-coverage.mjs",
     "test:coverage:baseline": "vitest run --coverage && node scripts/update-coverage-baseline.mjs",
     "docs": "typedoc",
+    "docs:serve": "typedoc && npx serve docs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

@@ -2,12 +2,15 @@ import { HttpClient } from './http';
 import { CollectionsResource } from './resources/collections';
 import { DocumentsResource } from './resources/documents';
 import { ItemsResource } from './resources/items';
+import { MediaResource } from './resources/media';
+import { SiteResource } from './resources/site';
 import type { ClientDefaults, DeliveryStatus } from './types/common';
 import { maskApiKey, normalizeBaseUrl } from './utils';
 
 export interface ClientConfig {
   apiKey: string;
   baseUrl?: string;
+  pathPrefix?: string;
   locale?: string;
   status?: DeliveryStatus;
   fetch?: typeof globalThis.fetch;
@@ -19,12 +22,14 @@ export interface ClientConfig {
  * Main SDK client for the EelZap Content Delivery API.
  */
 export class EelZapClient {
+  readonly site: SiteResource;
   readonly collections: CollectionsResource;
   readonly items: ItemsResource;
   readonly documents: DocumentsResource;
+  readonly media: MediaResource;
   readonly #http: HttpClient;
   readonly #defaults: ClientDefaults;
-  readonly #config: Required<Pick<ClientConfig, 'apiKey' | 'baseUrl' | 'timeout'>> &
+  readonly #config: Required<Pick<ClientConfig, 'apiKey' | 'baseUrl' | 'pathPrefix' | 'timeout'>> &
     Pick<ClientConfig, 'defaultHeaders'>;
 
   constructor(config: ClientConfig) {
@@ -45,6 +50,7 @@ export class EelZapClient {
     this.#config = {
       apiKey: config.apiKey,
       baseUrl: normalizeBaseUrl(config.baseUrl ?? 'https://api.eelzap.com'),
+      pathPrefix: config.pathPrefix ?? '/v1',
       defaultHeaders: config.defaultHeaders,
       timeout: config.timeout ?? 30_000,
     };
@@ -52,21 +58,24 @@ export class EelZapClient {
     this.#http = new HttpClient({
       apiKey: this.#config.apiKey,
       baseUrl: this.#config.baseUrl,
+      pathPrefix: this.#config.pathPrefix,
       fetch: fetchImpl,
       defaultHeaders: this.#config.defaultHeaders,
       timeout: this.#config.timeout,
     });
 
+    this.site = new SiteResource(this.#http);
     this.collections = new CollectionsResource(this.#http, this.#defaults);
     this.items = new ItemsResource(this.#http, this.#defaults);
     this.documents = new DocumentsResource(this.#http, this.#defaults);
+    this.media = new MediaResource(this.#http);
   }
 
   /**
    * Returns a masked string representation safe for logs.
    */
   toString(): string {
-    return `EelZapClient(baseUrl=${this.#config.baseUrl}, apiKey=${maskApiKey(this.#config.apiKey)})`;
+    return `EelZapClient(baseUrl=${this.#config.baseUrl}, pathPrefix=${this.#config.pathPrefix}, apiKey=${maskApiKey(this.#config.apiKey)})`;
   }
 }
 

@@ -19,6 +19,19 @@ export interface Pagination {
 }
 
 /**
+ * Site metadata resolved from the authenticated API key.
+ */
+export interface SiteInfo {
+  id: string;
+  name: string;
+  key: string;
+  defaultLocale: string;
+  locales: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
  * SEO metadata resolved for the current locale.
  */
 export interface Seo {
@@ -135,4 +148,26 @@ export interface ApiErrorPayload {
 export interface ClientDefaults {
   locale?: string;
   status?: DeliveryStatus;
+}
+
+/**
+ * SEO input accepted by the public write API.
+ */
+export interface SeoInput {
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  ogType?: string | null;
+  twitterCard?: 'SUMMARY' | 'SUMMARY_LARGE_IMAGE';
+  noIndex?: boolean;
+  noFollow?: boolean;
+  keywords?: string | null;
+  structuredData?: Record<string, unknown> | null;
+  locale?: string | null;
+}
+
+/**
+ * Delete operations can optionally remove linked media.
+ */
+export interface DeleteOptions {
+  deleteMediaIds?: string[];
 }

@@ -9,9 +9,18 @@ describe('index exports', () => {
     expect(sdk.EelZapError).toBeTypeOf('function');
     expect(sdk.EelZapNetworkError).toBeTypeOf('function');
     expect(sdk.ItemQueryBuilder).toBeTypeOf('function');
+    expect(sdk.SiteResource).toBeTypeOf('function');
     expect(sdk.CollectionsResource).toBeTypeOf('function');
+    expect(sdk.CollectionFieldsResource).toBeTypeOf('function');
+    expect(sdk.CollectionSectionsResource).toBeTypeOf('function');
     expect(sdk.ItemsResource).toBeTypeOf('function');
+    expect(sdk.ItemSeoResource).toBeTypeOf('function');
     expect(sdk.DocumentsResource).toBeTypeOf('function');
+    expect(sdk.DocumentFieldsResource).toBeTypeOf('function');
+    expect(sdk.DocumentSectionsResource).toBeTypeOf('function');
+    expect(sdk.DocumentValuesResource).toBeTypeOf('function');
+    expect(sdk.DocumentSeoResource).toBeTypeOf('function');
+    expect(sdk.MediaResource).toBeTypeOf('function');
   });
 
   it('creates a client from the barrel export', () => {

@@ -4,6 +4,7 @@ import {
   cleanParams,
   maskApiKey,
   mergeRequestOptions,
+  normalizeHeaderValue,
   normalizeBaseUrl,
   serializeFilters,
   toArrayParam,
@@ -64,5 +65,12 @@ describe('utils', () => {
   it('masks short and long api keys', () => {
     expect(maskApiKey('short')).toBe('***');
     expect(maskApiKey('cms_secret_12345678')).toBe('cms_...5678');
+  });
+
+  it('normalizes optional header values', () => {
+    expect(normalizeHeaderValue(undefined)).toBeUndefined();
+    expect(normalizeHeaderValue(null)).toBeUndefined();
+    expect(normalizeHeaderValue('   ')).toBeUndefined();
+    expect(normalizeHeaderValue(' Hero ')).toBe('Hero');
   });
 });

@@ -1,8 +1,8 @@
 # @8ux-co/eelzap-api-sdk-ts
 
 [![npm version](https://img.shields.io/npm/v/%408ux-co%2Feelzap-api-sdk-ts)](https://www.npmjs.com/package/@8ux-co/eelzap-api-sdk-ts)
-[![npm downloads](https://img.shields.io/npm/dm/%408ux-co%2Feelzap-api-sdk-ts)](https://www.npmjs.com/package/@8ux-co/eelzap-api-sdk-ts)
 [![CI](https://img.shields.io/github/actions/workflow/status/8ux-co/eelzap-api-sdk-ts/ci.yml?branch=main&label=ci)](https://github.com/8ux-co/eelzap-api-sdk-ts/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/%408ux-co%2Feelzap-api-sdk-ts)](https://github.com/8ux-co/eelzap-api-sdk-ts/blob/main/LICENSE)
 [![Docs](https://img.shields.io/badge/docs-github%20pages-blue)](https://8ux-co.github.io/eelzap-api-sdk-ts/)
 
 Official TypeScript client for the EelZap Content Delivery API.
@@ -37,6 +37,7 @@ const { data: posts } = await cms.items.list('blog-posts', {
 | --- | --- | --- | --- |
 | `apiKey` | `string` | Yes | — |
 | `baseUrl` | `string` | No | `https://api.eelzap.com` |
+| `pathPrefix` | `string` | No | `/v1` |
 | `locale` | `string` | No | Site default locale |
 | `status` | `'published' \| 'draft' \| 'all'` | No | `published` |
 | `fetch` | `typeof fetch` | No | Global `fetch` |
@@ -50,6 +51,15 @@ const { data: posts } = await cms.items.list('blog-posts', {
 ```ts
 const collections = await cms.collections.list();
 const blog = await cms.collections.get('blog-posts');
+const created = await cms.collections.create({
+  name: 'Blog Posts',
+  key: 'blog-posts',
+});
+await cms.collections.fields.create('blog-posts', {
+  key: 'title',
+  name: 'Title',
+  type: 'SHORT_TEXT',
+});
 ```
 
 ### Items
@@ -69,6 +79,14 @@ const products = await cms.items.list('products', {
 const product = await cms.items.get('products', 'noise-cancelling-headphones', {
   locale: 'en',
 });
+
+await cms.items.create('products', {
+  slug: 'noise-cancelling-headphones',
+  values: {
+    title: 'Noise Cancelling Headphones',
+  },
+});
+await cms.items.publish('products', 'noise-cancelling-headphones');
 ```
 
 ### Query Builder
@@ -94,6 +112,32 @@ const homepage = await cms.documents.get('homepage', {
   locale: 'en',
   status: 'draft',
 });
+
+await cms.documents.values.update('homepage', {
+  hero_title: 'Welcome',
+});
+await cms.documents.seo.update('homepage', {
+  metaTitle: 'Homepage',
+});
+```
+
+### Site
+
+```ts
+const site = await cms.site.get();
+```
+
+### Media
+
+```ts
+const media = await cms.media.upload({
+  file: new Blob(['hello'], { type: 'text/plain' }),
+  filename: 'hello.txt',
+  contentType: 'text/plain',
+  title: 'Greeting',
+});
+
+await cms.media.publish(media.id);
 ```
 
 ### Rich Text And Media Helpers
@@ -122,6 +166,7 @@ import { createClient } from '@8ux-co/eelzap-api-sdk-ts';
 export const cms = createClient({
   apiKey: process.env.EELZAP_API_KEY!,
   baseUrl: process.env.EELZAP_BASE_URL,
+  pathPrefix: process.env.EELZAP_PATH_PREFIX,
 });
 ```
 

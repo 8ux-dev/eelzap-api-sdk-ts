@@ -1,4 +1,12 @@
-import type { CommonRequestOptions, Pagination, QueryPrimitive, Seo, ItemMeta } from './common';
+import type {
+  CommonRequestOptions,
+  DeleteOptions,
+  Pagination,
+  QueryPrimitive,
+  Seo,
+  SeoInput,
+  ItemMeta,
+} from './common';
 import type { CollectionSummary } from './collections';
 
 /**
@@ -61,4 +69,53 @@ export interface ItemListResponse<TContent = Record<string, unknown>> {
   data: ItemDetail<TContent>[];
   pagination: Pagination;
   collection: CollectionSummary;
+}
+
+/**
+ * Input for creating a collection item.
+ */
+export interface CreateItemInput {
+  slug: string;
+  locale?: string;
+  values: Record<string, unknown>;
+}
+
+/**
+ * Input for updating a collection item.
+ */
+export interface UpdateItemInput {
+  slug?: string;
+  locale?: string;
+  values?: Record<string, unknown>;
+}
+
+/**
+ * Response payload for item mutation routes.
+ */
+export interface ItemMutationResponse<TContent = Record<string, unknown>> {
+  item: ItemDetail<TContent>;
+}
+
+/**
+ * Response payload for item delete routes.
+ */
+export interface ItemDeleteResponse {
+  success: true;
+}
+
+/**
+ * Extra options for item deletion.
+ */
+export type DeleteItemOptions = DeleteOptions;
+
+/**
+ * SEO payload for item management routes.
+ */
+export type ItemSeo = Seo | SeoInput | Record<string, unknown> | null;
+
+/**
+ * Response payload for item SEO routes.
+ */
+export interface ItemSeoResponse {
+  seo: ItemSeo;
 }

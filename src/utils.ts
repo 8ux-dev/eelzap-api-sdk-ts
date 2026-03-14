@@ -29,6 +29,19 @@ export function cleanParams(
   );
 }
 
+export function normalizeHeaderValue(value: string | null | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function isOperatorMap(
   value: ItemFilters[string],
 ): value is Exclude<ItemFilters[string], QueryPrimitive> {

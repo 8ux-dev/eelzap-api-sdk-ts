@@ -1,13 +1,25 @@
 import { HttpClient } from '../http';
+import { buildResourcePath } from '../paths';
 import { ItemQueryBuilder } from '../query-builder';
 import type { ClientDefaults } from '../types/common';
-import type { ItemDetail, ItemGetOptions, ItemListOptions, ItemListResponse } from '../types/items';
+import type {
+  CreateItemInput,
+  DeleteItemOptions,
+  ItemDetail,
+  ItemGetOptions,
+  ItemListOptions,
+  ItemListResponse,
+  UpdateItemInput,
+} from '../types/items';
 import { mergeRequestOptions, serializeFilters, toArrayParam } from '../utils';
+import { ItemSeoResource } from './item-seo';
+import { toDeleteBody } from './resource-helpers';
 
 /**
  * Read-only collection item endpoints.
  */
 export class ItemsResource {
+  readonly seo: ItemSeoResource;
   readonly #http: HttpClient;
   readonly #defaults: ClientDefaults;
 
@@ -17,6 +29,7 @@ export class ItemsResource {
   constructor(http: HttpClient, defaults: ClientDefaults) {
     this.#http = http;
     this.#defaults = defaults;
+    this.seo = new ItemSeoResource(http);
   }
 
   /**
@@ -28,8 +41,8 @@ export class ItemsResource {
   ): Promise<ItemListResponse<TContent>> {
     const merged = mergeRequestOptions(this.#defaults, options);
 
-    return this.#http.request<ItemListResponse<TContent>>(
-      `api/v1/collections/${collectionKey}/items`,
+    return this.#http.get<ItemListResponse<TContent>>(
+      buildResourcePath('collections', collectionKey, 'items'),
       {
         params: {
           locale: merged.locale,
@@ -54,8 +67,8 @@ export class ItemsResource {
   ): Promise<ItemDetail<TContent>> {
     const merged = mergeRequestOptions(this.#defaults, options);
 
-    return this.#http.request<ItemDetail<TContent>>(
-      `api/v1/collections/${collectionKey}/items/${slug}`,
+    return this.#http.get<ItemDetail<TContent>>(
+      buildResourcePath('collections', collectionKey, 'items', slug),
       {
         params: {
           locale: merged.locale,
@@ -71,5 +84,74 @@ export class ItemsResource {
    */
   collection(collectionKey: string): ItemQueryBuilder {
     return new ItemQueryBuilder(this.#http, this.#defaults, collectionKey);
+  }
+
+  /**
+   * Creates an item in a collection.
+   */
+  async create<TContent = Record<string, unknown>>(
+    collectionKey: string,
+    input: CreateItemInput,
+  ): Promise<ItemDetail<TContent>> {
+    const response = await this.#http.post<{ item: ItemDetail<TContent> }>(
+      buildResourcePath('collections', collectionKey, 'items'),
+      input,
+    );
+    return response.item;
+  }
+
+  /**
+   * Updates an item by slug.
+   */
+  async update<TContent = Record<string, unknown>>(
+    collectionKey: string,
+    slug: string,
+    input: UpdateItemInput,
+  ): Promise<ItemDetail<TContent>> {
+    const response = await this.#http.patch<{ item: ItemDetail<TContent> }>(
+      buildResourcePath('collections', collectionKey, 'items', slug),
+      input,
+    );
+    return response.item;
+  }
+
+  /**
+   * Deletes an item by slug.
+   */
+  async delete(
+    collectionKey: string,
+    slug: string,
+    options?: DeleteItemOptions,
+  ): Promise<{ success: true }> {
+    return this.#http.delete<{ success: true }>(
+      buildResourcePath('collections', collectionKey, 'items', slug),
+      toDeleteBody(options),
+    );
+  }
+
+  /**
+   * Publishes an item by slug.
+   */
+  async publish<TContent = Record<string, unknown>>(
+    collectionKey: string,
+    slug: string,
+  ): Promise<ItemDetail<TContent>> {
+    const response = await this.#http.post<{ item: ItemDetail<TContent> }>(
+      buildResourcePath('collections', collectionKey, 'items', slug, 'publish'),
+    );
+    return response.item;
+  }
+
+  /**
+   * Unpublishes an item by slug.
+   */
+  async unpublish<TContent = Record<string, unknown>>(
+    collectionKey: string,
+    slug: string,
+  ): Promise<ItemDetail<TContent>> {
+    const response = await this.#http.post<{ item: ItemDetail<TContent> }>(
+      buildResourcePath('collections', collectionKey, 'items', slug, 'unpublish'),
+    );
+    return response.item;
   }
 }

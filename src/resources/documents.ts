@@ -1,17 +1,30 @@
 import { HttpClient } from '../http';
 import type { ClientDefaults } from '../types/common';
 import type {
+  CreateDocumentInput,
+  DeleteDocumentOptions,
   DocumentDetail,
   DocumentGetOptions,
   DocumentListOptions,
   DocumentListResponse,
+  UpdateDocumentInput,
 } from '../types/documents';
+import { buildResourcePath } from '../paths';
+import { DocumentFieldsResource } from './document-fields';
+import { DocumentSectionsResource } from './document-sections';
+import { DocumentSeoResource } from './document-seo';
+import { DocumentValuesResource } from './document-values';
+import { toDeleteBody } from './resource-helpers';
 import { mergeRequestOptions, toArrayParam } from '../utils';
 
 /**
  * Read-only document endpoints.
  */
 export class DocumentsResource {
+  readonly fields: DocumentFieldsResource;
+  readonly sections: DocumentSectionsResource;
+  readonly values: DocumentValuesResource;
+  readonly seo: DocumentSeoResource;
   readonly #http: HttpClient;
   readonly #defaults: ClientDefaults;
 
@@ -21,6 +34,10 @@ export class DocumentsResource {
   constructor(http: HttpClient, defaults: ClientDefaults) {
     this.#http = http;
     this.#defaults = defaults;
+    this.fields = new DocumentFieldsResource(http);
+    this.sections = new DocumentSectionsResource(http);
+    this.values = new DocumentValuesResource(http);
+    this.seo = new DocumentSeoResource(http);
   }
 
   /**
@@ -29,7 +46,7 @@ export class DocumentsResource {
   async list(options?: DocumentListOptions): Promise<DocumentListResponse> {
     const merged = mergeRequestOptions(this.#defaults, options);
 
-    return this.#http.request<DocumentListResponse>('api/v1/documents', {
+    return this.#http.get<DocumentListResponse>(buildResourcePath('documents'), {
       params: {
         locale: merged.locale,
         status: merged.status,
@@ -46,12 +63,73 @@ export class DocumentsResource {
   ): Promise<DocumentDetail<TContent>> {
     const merged = mergeRequestOptions(this.#defaults, options);
 
-    return this.#http.request<DocumentDetail<TContent>>(`api/v1/documents/${documentKey}`, {
+    return this.#http.get<DocumentDetail<TContent>>(buildResourcePath('documents', documentKey), {
       params: {
         locale: merged.locale,
         status: merged.status,
         fields: toArrayParam(merged.fields),
       },
     });
+  }
+
+  /**
+   * Creates a document.
+   */
+  async create<TContent = Record<string, unknown>>(
+    input: CreateDocumentInput,
+  ): Promise<DocumentDetail<TContent>> {
+    const response = await this.#http.post<{ document: DocumentDetail<TContent> }>(
+      buildResourcePath('documents'),
+      input,
+    );
+    return response.document;
+  }
+
+  /**
+   * Updates a document.
+   */
+  async update<TContent = Record<string, unknown>>(
+    documentKey: string,
+    input: UpdateDocumentInput,
+  ): Promise<DocumentDetail<TContent>> {
+    const response = await this.#http.patch<{ document: DocumentDetail<TContent> }>(
+      buildResourcePath('documents', documentKey),
+      input,
+    );
+    return response.document;
+  }
+
+  /**
+   * Deletes a document.
+   */
+  async delete(documentKey: string, options?: DeleteDocumentOptions): Promise<{ success: true }> {
+    return this.#http.delete<{ success: true }>(
+      buildResourcePath('documents', documentKey),
+      toDeleteBody(options),
+    );
+  }
+
+  /**
+   * Publishes a document.
+   */
+  async publish<TContent = Record<string, unknown>>(
+    documentKey: string,
+  ): Promise<DocumentDetail<TContent>> {
+    const response = await this.#http.post<{ document: DocumentDetail<TContent> }>(
+      buildResourcePath('documents', documentKey, 'publish'),
+    );
+    return response.document;
+  }
+
+  /**
+   * Unpublishes a document.
+   */
+  async unpublish<TContent = Record<string, unknown>>(
+    documentKey: string,
+  ): Promise<DocumentDetail<TContent>> {
+    const response = await this.#http.post<{ document: DocumentDetail<TContent> }>(
+      buildResourcePath('documents', documentKey, 'unpublish'),
+    );
+    return response.document;
   }
 }
