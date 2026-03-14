@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/8ux-co/eelzap-api-sdk-ts"
+    "url": "git+https://github.com/8ux-co/eelzap-api-sdk-ts.git"
   },
   "homepage": "https://github.com/8ux-co/eelzap-api-sdk-ts#readme",
   "bugs": {
